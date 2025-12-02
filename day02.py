@@ -1,11 +1,12 @@
 from sys import stdin
+from typing import Callable
 
 INITIAL_DIAL: int = 50
 
 
 def main():
     ranges = parse_ranges(stdin.read())
-    print("Part 1", sum_invalid_ids(ranges))
+    print("Part 1", sum_invalid_ids(ranges, repeats_twice))
 
 
 def parse_ranges(data: str) -> list[tuple[int, int]]:
@@ -16,22 +17,18 @@ def parse_ranges(data: str) -> list[tuple[int, int]]:
     return [make_pair(item) for item in data.strip().split(",") if item.strip()]
 
 
-def sum_invalid_ids(ranges: list[tuple[int, int]]) -> int:
-    def len_even(s: str) -> bool:
-        return (len(s) % 2) == 0
-
-    def left(s: str) -> str:
-        return s[: len(s) // 2]
-
-    def right(s: str) -> str:
-        return s[len(s) // 2 :]
-
-    def item_sum(s: str) -> int:
-        return int(s) if len_even(s) and left(s) == right(s) else 0
-
+def sum_invalid_ids(
+    ranges: list[tuple[int, int]], is_invalid_fn: Callable[[str], bool]
+) -> int:
     return sum(
-        item_sum(str(item)) for start, end in ranges for item in range(start, end + 1)
+        item if is_invalid_fn(str(item)) else 0
+        for start, end in ranges
+        for item in range(start, end + 1)
     )
+
+
+def repeats_twice(s: str) -> bool:
+    return (len(s) % 2) == 0 and s[: len(s) // 2] == s[len(s) // 2 :]
 
 
 if __name__ == "__main__":

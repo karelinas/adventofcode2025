@@ -1,6 +1,6 @@
 import unittest
 
-from day02 import parse_ranges, sum_invalid_ids
+from day02 import parse_ranges, repeats_twice, sum_invalid_ids
 
 EXAMPLE_INPUT: str = (
     "11-22,95-115,998-1012,1188511880-1188511890,222220-222224,"
@@ -14,4 +14,4 @@ class Day02TestCase(unittest.TestCase):
         ranges = parse_ranges(EXAMPLE_INPUT)
 
         with self.subTest("Part 1"):
-            self.assertEqual(sum_invalid_ids(ranges), 1227775554)
+            self.assertEqual(sum_invalid_ids(ranges, repeats_twice), 1227775554)
