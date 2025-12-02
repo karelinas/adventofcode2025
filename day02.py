@@ -1,5 +1,8 @@
+from re import Pattern, compile
 from sys import stdin
-from typing import Callable, Iterable
+from typing import Callable
+
+REPEAT_REGEX: Pattern = compile(r"^(\d+)\1+$")
 
 
 def main():
@@ -31,15 +34,7 @@ def repeats_twice(s: str) -> bool:
 
 
 def repeats(s: str) -> bool:
-    def pieces(length: int) -> Iterable[str]:
-        return (s[n : n + length] for n in range(0, len(s), length))
-
-    def all_equal(items: Iterable[str]) -> bool:
-        it = iter(items)
-        first = next(it)
-        return all(n == first for n in it)
-
-    return any(all_equal(pieces(length)) for length in range(1, (len(s) // 2) + 1))
+    return REPEAT_REGEX.match(s) is not None
 
 
 if __name__ == "__main__":
