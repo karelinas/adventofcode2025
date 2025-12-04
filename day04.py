@@ -11,15 +11,15 @@ def main():
 
 
 class Grid:
-    def __init__(self, grid: dict[Point, str]) -> None:
-        self.grid: dict[Point, str] = grid
+    def __init__(self, rolls: set[Point]) -> None:
+        self.rolls: set[Point] = rolls
 
     @staticmethod
     def from_string(s: str) -> "Grid":
         lines: list[str] = [line.strip() for line in s.split("\n") if line]
         return Grid(
             {
-                Point(x, y): ch
+                Point(x, y)
                 for y, line in enumerate(lines)
                 for x, ch in enumerate(line)
                 if ch == "@"
@@ -42,14 +42,14 @@ class Grid:
         of rolls that was removed.
         """
         to_remove = self.accessible_rolls()
-        self.grid = {key: val for key, val in self.grid.items() if key not in to_remove}
+        self.rolls -= to_remove
         return len(to_remove)
 
     def accessible_rolls(self) -> set[Point]:
         return {
             coord
-            for coord in self.grid.keys()
-            if sum(1 for neighbor in neighborhood(coord) if neighbor in self.grid) < 4
+            for coord in self.rolls
+            if sum(1 for neighbor in neighborhood(coord) if neighbor in self.rolls) < 4
         }
 
 
