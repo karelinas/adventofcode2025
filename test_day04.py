@@ -22,3 +22,5 @@ class Day04TestCase(unittest.TestCase):
 
         with self.subTest("Part 1"):
             self.assertEqual(Grid.count_accessible_rolls(grid), 13)
+        with self.subTest("Part 2"):
+            self.assertEqual(Grid.remove_all_rolls(grid), 43)

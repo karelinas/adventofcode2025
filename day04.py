@@ -6,6 +6,7 @@ from lib import Point, neighborhood
 def main():
     grid = Grid.from_string(stdin.read())
     print("Part 1:", grid.count_accessible_rolls())
+    print("Part 2:", grid.remove_all_rolls())
 
 
 class Grid:
@@ -25,15 +26,30 @@ class Grid:
         )
 
     def count_accessible_rolls(self) -> int:
-        return sum(
-            (
-                1
-                if sum(1 for neighbor in neighborhood(coord) if neighbor in self.grid)
-                < 4
-                else 0
-            )
+        return len(self.accessible_rolls())
+
+    def remove_all_rolls(self) -> int:
+        total_removed: int = 0
+        while (removed := self.remove_rolls()) > 0:
+            total_removed += removed
+        return total_removed
+
+    def remove_rolls(self) -> int:
+        """
+        Does one pass of removing rolls from the grid and returns the number
+        of rolls that was removed.
+        """
+        to_remove = self.accessible_rolls()
+        self.grid = {key: val for key, val in self.grid.items() if key not in to_remove}
+
+        return len(to_remove)
+
+    def accessible_rolls(self) -> set[Point]:
+        return {
+            coord
             for coord in self.grid.keys()
-        )
+            if sum(1 for neighbor in neighborhood(coord) if neighbor in self.grid) < 4
+        }
 
 
 if __name__ == "__main__":
