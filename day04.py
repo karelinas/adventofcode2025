@@ -1,4 +1,5 @@
 from sys import stdin
+from typing import Iterable
 
 from lib import Point, neighborhood
 
@@ -29,10 +30,11 @@ class Grid:
         return len(self.accessible_rolls())
 
     def remove_all_rolls(self) -> int:
-        total_removed: int = 0
-        while (removed := self.remove_rolls()) > 0:
-            total_removed += removed
-        return total_removed
+        def all_removals() -> Iterable[int]:
+            while (removed := self.remove_rolls()) > 0:
+                yield removed
+
+        return sum(all_removals())
 
     def remove_rolls(self) -> int:
         """
@@ -41,7 +43,6 @@ class Grid:
         """
         to_remove = self.accessible_rolls()
         self.grid = {key: val for key, val in self.grid.items() if key not in to_remove}
-
         return len(to_remove)
 
     def accessible_rolls(self) -> set[Point]:
