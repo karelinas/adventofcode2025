@@ -11,12 +11,7 @@ class Range:
         return item >= self.start and item <= self.end
 
     def overlaps(self, other: "Range") -> bool:
-        return (
-            self.start in other
-            or self.end in other
-            or other.start in self
-            or other.end in self
-        )
+        return self.start in other or self.end in other
 
     def length(self) -> int:
         return self.end - self.start + 1
