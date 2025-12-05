@@ -47,13 +47,12 @@ class Database:
     def merged_ranges(self) -> list[Range]:
         new_ranges: list[Range] = []
         remainder: list[Range] = list(sorted(self.ranges))
-        while len(remainder) > 1:
+        while len(remainder) > 0:
             collapsed_range: Range = remainder.pop(0)
             while len(remainder) > 0 and remainder[0].overlaps(collapsed_range):
                 collapsed_range = collapsed_range.merge(remainder.pop(0))
             new_ranges.append(collapsed_range)
-        if remainder:
-            new_ranges.append(remainder.pop())
+
         return new_ranges
 
     @staticmethod
