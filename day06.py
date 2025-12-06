@@ -5,7 +5,7 @@ from operator import add, mul
 from sys import stdin
 from typing import Any, Callable, Optional
 
-from lib import transpose
+from lib import normalize_line_lengths, rstrip_lines, transpose, transpose_str
 
 Operator = Callable[[Any, Any], Any]
 
@@ -43,25 +43,32 @@ def parse_problems(s: str) -> list[Problem]:
 
 
 def parse_problems_in_columns(s: str) -> list[Problem]:
+    # Transposition turns this:
+    #    123 328
+    #     45 64
+    #      6 98
+    #    *   +
+    #
+    # Into this:
+    #    1  *
+    #    24
+    #    356
+    #
+    #    369+
+    #    248
+    #    8
+    transposed_s = rstrip_lines(transpose_str(normalize_line_lengths(s)))
+
     problems: list[Problem] = []
-
-    # Read in lines of input normally
-    lines = [line for line in s.split("\n") if line]
-
-    # Pad line lengths to a normalized length for easier transposition
-    max_length: int = max(len(line) for line in lines)
-    lines = [line.ljust(max_length) for line in lines]
-
-    # Transpose columns into lines
-    columns = "\n".join("".join(col).strip() for col in transpose(lines))
-
-    for problem_str in columns.split("\n\n"):
+    # After transposition, problems are separated by an empty line between
+    # them, so we can parse them one by one
+    for problem_str in transposed_s.split("\n\n"):
         new_numbers: list[int] = []
         new_op: Optional[Operator] = None
 
         for line in problem_str.split("\n"):
-            # Check if operator is at the end and remove, so that we can read
-            # in the integer that it might be attached to
+            # If the operator is at the end, read it in and remove it so that
+            # we can parse the integer that comes before it
             if line[-1] in OPERATORS.keys():
                 new_op = OPERATORS[line[-1]]
                 line = line[:-1]

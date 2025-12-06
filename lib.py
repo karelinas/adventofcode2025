@@ -104,6 +104,22 @@ def transpose(lst: Iterable[Iterable[T]]) -> list[tuple[T, ...]]:
     return list(zip(*lst))
 
 
+def transpose_str(s: str) -> str:
+    """
+    Transposes a string
+
+    All lines in `s` must be the same length.
+    """
+    return "\n".join("".join(line) for line in transpose(s.split("\n")))
+
+
+def rstrip_lines(s: str) -> str:
+    """
+    Return a copy of the string with trailing whitespace removed on each line
+    """
+    return "\n".join(line.strip() for line in s.split("\n"))
+
+
 def each_twice(lst: Iterable[T]) -> Iterable[T]:
     for item in lst:
         yield item
@@ -115,3 +131,15 @@ def repeat_call(fn: Callable[[T], T], arg: T, *, n) -> T:
     for _ in range(n):
         rv = fn(rv)
     return rv
+
+
+def normalize_line_lengths(s: str, fillchar=" ") -> str:
+    """
+    Return a copy of the string with all lines padded to the same length
+
+    Shorter lines in `s` are padded to length using the specified fill
+    character.
+    """
+    lines = [line for line in s.split("\n") if line]
+    max_length: int = max(len(line) for line in lines)
+    return "\n".join(line.ljust(max_length, fillchar) for line in lines)
