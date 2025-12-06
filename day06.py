@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from functools import reduce
 from operator import add, mul
 from sys import stdin
-from typing import Any, Callable
+from typing import Any, Callable, Optional
 
 from lib import transpose
 
@@ -22,8 +22,13 @@ class Problem:
 
 
 def main():
-    problems: list[Problem] = parse_problems(stdin.read())
+    problem_str = stdin.read()
+
+    problems: list[Problem] = parse_problems(problem_str)
     print("Part 1:", sum_solutions(problems))
+
+    problems = parse_problems_in_columns(problem_str)
+    print("Part 2:", sum_solutions(problems))
 
 
 def parse_problems(s: str) -> list[Problem]:
@@ -35,6 +40,40 @@ def parse_problems(s: str) -> list[Problem]:
             if line
         )
     ]
+
+
+def parse_problems_in_columns(s: str) -> list[Problem]:
+    problems: list[Problem] = []
+
+    lines = [line for line in s.split("\n") if line]
+    max_length: int = max(len(line) for line in lines)
+    lines = [line.ljust(max_length) for line in lines]
+    columns = list("".join(col) for col in transpose(lines))
+
+    numbers: list[int] = []
+    op: Optional[Operator] = None
+    for col in columns:
+        if not col.strip():
+            assert op
+            problems.append(Problem(numbers, op))
+            numbers = []
+            op = None
+
+        cells = re.split(r"\s+", col)
+        for cell in cells:
+            cell = cell.strip()
+            if not cell:
+                continue
+            if cell in OPERATORS or cell[-1] in OPERATORS:
+                op = OPERATORS[cell[-1]]
+                cell = cell[:-1]
+            if cell.strip():
+                numbers.append(int(cell))
+
+    if numbers and op:
+        problems.append(Problem(numbers, op))
+
+    return problems
 
 
 def sum_solutions(problems: list[Problem]) -> int:
