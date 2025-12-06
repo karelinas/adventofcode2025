@@ -66,17 +66,17 @@ def parse_problems_in_columns(s: str) -> list[Problem]:
         new_numbers: list[int] = []
         new_op: Optional[Operator] = None
 
-        for line in problem_str.split("\n"):
+        for number_str in problem_str.split("\n"):
             # If the operator is at the end, read it in and remove it so that
             # we can parse the integer that comes before it
-            if line[-1] in OPERATORS.keys():
-                new_op = OPERATORS[line[-1]]
-                line = line[:-1]
+            if number_str[-1] in OPERATORS:
+                new_op = OPERATORS[number_str[-1]]
+                number_str = number_str[:-1]
 
             # Add the number to this problem's number list
-            new_numbers.append(int(line))
+            new_numbers.append(int(number_str))
 
-        # Input format promises operator is in every problem set...
+        # Input format promises that every problem has an operator...
         assert new_op
 
         # Finally add the new Problem to the list
