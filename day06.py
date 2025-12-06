@@ -45,33 +45,35 @@ def parse_problems(s: str) -> list[Problem]:
 def parse_problems_in_columns(s: str) -> list[Problem]:
     problems: list[Problem] = []
 
+    # Read in lines of input normally
     lines = [line for line in s.split("\n") if line]
+
+    # Pad line lengths to a normalized length for easier transposition
     max_length: int = max(len(line) for line in lines)
     lines = [line.ljust(max_length) for line in lines]
-    columns = list("".join(col) for col in transpose(lines))
 
-    numbers: list[int] = []
-    op: Optional[Operator] = None
-    for col in columns:
-        if not col.strip():
-            assert op
-            problems.append(Problem(numbers, op))
-            numbers = []
-            op = None
+    # Transpose columns into lines
+    columns = "\n".join("".join(col).strip() for col in transpose(lines))
 
-        cells = re.split(r"\s+", col)
-        for cell in cells:
-            cell = cell.strip()
-            if not cell:
-                continue
-            if cell in OPERATORS or cell[-1] in OPERATORS:
-                op = OPERATORS[cell[-1]]
-                cell = cell[:-1]
-            if cell.strip():
-                numbers.append(int(cell))
+    for problem_str in columns.split("\n\n"):
+        new_numbers: list[int] = []
+        new_op: Optional[Operator] = None
 
-    if numbers and op:
-        problems.append(Problem(numbers, op))
+        for line in problem_str.split("\n"):
+            # Check if operator is at the end and remove, so that we can read
+            # in the integer that it might be attached to
+            if line[-1] in OPERATORS.keys():
+                new_op = OPERATORS[line[-1]]
+                line = line[:-1]
+
+            # Add the number to this problem's number list
+            new_numbers.append(int(line))
+
+        # Input format promises operator is in every problem set...
+        assert new_op
+
+        # Finally add the new Problem to the list
+        problems.append(Problem(new_numbers, new_op))
 
     return problems
 
