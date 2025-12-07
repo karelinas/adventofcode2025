@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from functools import cached_property
+from functools import cache, cached_property
 from sys import stdin
 from typing import Optional
 
@@ -20,6 +20,7 @@ def main():
     manifold: TachyonManifold
     beam, manifold = parse_manifold(stdin.read())
     print("Part 1:", count_splits(beam, manifold))
+    print("Part 2:", quantum_splits(beam, manifold))
 
 
 def parse_manifold(s: str) -> tuple[Point, TachyonManifold]:
@@ -57,14 +58,32 @@ def count_splits(start_beam: Point, manifold: TachyonManifold) -> int:
 
         seen.add(beam)
 
+        # Has beam hit a splitter?
         if beam in manifold.splitters:
             split_count += 1
             beams.append(beam + Point.west())
             beams.append(beam + Point.east())
+        # Otherwise beam just continues south
         else:
             beams.append(beam + Point.south())
 
     return split_count
+
+
+@cache
+def quantum_splits(beam: Point, manifold: TachyonManifold) -> int:
+    # Has beam gone out of bounds?
+    if beam.y > manifold.height:
+        return 1
+
+    # Has beam hit a splitter?
+    if beam in manifold.splitters:
+        west: Point = beam + Point.west()
+        east: Point = beam + Point.east()
+        return quantum_splits(west, manifold) + quantum_splits(east, manifold)
+
+    # Otherwise beam just continues south
+    return quantum_splits(beam + Point.south(), manifold)
 
 
 if __name__ == "__main__":

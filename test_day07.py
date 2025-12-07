@@ -1,6 +1,6 @@
 import unittest
 
-from day07 import count_splits, parse_manifold
+from day07 import count_splits, parse_manifold, quantum_splits
 
 EXAMPLE_INPUT: str = """
 .......S.......
@@ -27,3 +27,5 @@ class Day07TestCase(unittest.TestCase):
         beam, manifold = parse_manifold(EXAMPLE_INPUT)
         with self.subTest("Part 1"):
             self.assertEqual(count_splits(beam, manifold), 21)
+        with self.subTest("Part 2"):
+            self.assertEqual(quantum_splits(beam, manifold), 40)
